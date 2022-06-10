@@ -21,7 +21,6 @@ shellcheck*
 tools/venv/
 
 # Poetry related
-poetry.lock
 .venv/
 
 # Jupyter
