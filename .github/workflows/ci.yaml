@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: 0 0 * * 1
+
+jobs:
+  linter_and_test:
+    runs-on: self-hosted
+    strategy:
+      max-parallel: 10
+      matrix:
+        python-version: [3.7, 3.8]
+        poetry-version: [1.1.11]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Install original package
+        run: poetry install -n
+      - name: Run Black
+        run: poetry run black . --check --diff
+      - name: Run flake8
+        run: poetry run pflake8
+      - name: Run pytest
+        run: poetry run pytest test

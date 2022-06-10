@@ -1,0 +1,15 @@
+version: '3'
+volumes:
+    venv:
+
+services:
+    pydtk:
+        image: registry.gitlab.com/hdwlab/template-modern-python:latest
+        container_name: app
+        build: .
+        volumes:
+            - .:/opt/app:rw
+            - venv:/opt/app/.venv
+        working_dir: /opt/app
+        command: bash
+        tty: true

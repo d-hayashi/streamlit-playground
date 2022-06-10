@@ -1,0 +1,29 @@
+name: Image
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - v*
+
+jobs:
+  build-and-publish-images:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@master
+      - name: Login to GitLab registry
+        env:
+          GITLAB_USER: ${{ secrets.GITLAB_USER }}
+          GITLAB_PASS: ${{ secrets.GITLAB_PASS }}
+        shell: bash
+        run: docker login -u ${GITLAB_USER} -p ${GITLAB_PASS} registry.gitlab.com
+      - name: Build
+        env:
+          TAG: ${{ github.ref }}
+        run: VERSION=${TAG##*/} make build-image
+      - name: Publish
+        env:
+          TAG: ${{ github.ref }}
+        run: VERSION=${TAG##*/} make publish-image
